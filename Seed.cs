@@ -1,10 +1,15 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
-public class Seed : MonoBehaviour {
-
-
-		
+public class Seed {
+	/*
+     * Frontier
+ 	 * ********
+	 * This script holds all information and carries out any changes to the seed object as well as creating the plant
+	 * ********
+	 * @Matt
+	 * ********
+	 */
 	string seedName, seedDescription;
 	float growTime;
 	bool watered, planted;

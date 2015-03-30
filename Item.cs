@@ -42,7 +42,7 @@ public class Item
 		Trade,
 		Trash
 	}
-	public Item(string name, string ID, string desc, int maxDura, int curDura, int damage, int speed, int slot, int value, string type, bool stack)
+	public Item (string name, string ID, string desc, int maxDura, int curDura, int damage, int speed, int slot, int value, string type, bool stack)
 	{
 		itemName = name;
 		itemID = ID;
@@ -53,51 +53,50 @@ public class Item
 		itemSpeed = speed;
 		itemEquipSlot = slot;
 		itemValue = value;
-		if(type == "Trade")
-		{
+		if (type == "Trade") {
 			itemType = ItemType.Trade;
 			itemMaxStack = 40;
 		}
-		if(type == "Consumable")
-		{
+		if (type == "Consumable") {
 			itemType = ItemType.Consumable;
 			itemMaxStack = 40;
 		}
-		if(type == "Trash")
-		{
+		if (type == "Trash") {
 			itemType = ItemType.Trash;
 			itemMaxStack = 20;
 		}
-		if(type == "Weapon")
-		{
+		if (type == "Weapon") {
 			itemType = ItemType.Weapon;
 		}
-		if(type == "Quest")
-		{
+		if (type == "Quest") {
 			itemType = ItemType.Quest;
 		}
-		if(type == "Equipment")
-		{
+		if (type == "Equipment") {
 			itemType = ItemType.Equipment;
 		}
 		stackable = stack;
 		itemStackSize = 1;
-		itemMesh = Resources.Load<GameObject>("Models/" + itemName);
-		itemIcon = Resources.Load<Texture2D>("Icons/" + itemName);
+		itemMesh = Resources.Load<GameObject> ("Models/" + itemName);
+		itemIcon = Resources.Load<Texture2D> ("Icons/" + itemName);
 	}
-	public Item(string icon)
+
+	public Item (string icon)
 	{
 		itemName = null;
-		itemIcon = Resources.Load<Texture2D>("Icons/" + icon);
+		itemIcon = Resources.Load<Texture2D> ("Icons/" + icon);
 	}
-	public Item()
+
+	public Item ()
 	{
 		itemName = null;
 	}
-	public string getName() {
+
+	public string getName ()
+	{
 		return itemName;
 	}
-	public void useConsumable()
+
+	public void useConsumable ()
 	{
 		this.itemStackSize--;
 	}

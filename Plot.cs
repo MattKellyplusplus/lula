@@ -1,19 +1,38 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class Plot : MonoBehaviour {
+	/*
+     * Frontier
+ 	 * ********
+	 * This script handles all script interaction and player interaction involved in growing crops.
+	 * ********
+	 * @Matt
+	 * ********
+	 */
 	string description;
 	bool hasSeed, seedSewn, canWater, selected;
 	Seed seed;
 	Plant plant;
 	GameObject obj;
 	
-	public void selectPlot () {
+	public Plot selectPlot () {
 		selected = !selected;
+		if (selected) {
+			gameObject.GetComponent<Renderer>().material.color = Color.green;
+			return this;
+		} else {
+			gameObject.GetComponent<Renderer>().material.color = Color.white;
+			return null;
+		}
+	}
+	public bool isSelected() {
+		return selected;
 	}
 	public bool plantSeed (Seed s) {
 		if (!doesHasSeed ()) {
 			seed = s;
+			plant = seed.getPlant ();
 			setHasSeed ();
 			return true;
 		} else {
@@ -21,9 +40,10 @@ public class Plot : MonoBehaviour {
 		}
 	}
 	public bool sowSeed () {
-		if(hasSeed){
+		if(hasSeed && !isSewn()) {
 			seed.plantSeed();
 			setSewn();
+			Debug.Log(seed.getName() +" was planted in a plot.");
 			return true;
 		} else {
 			return false;
@@ -36,7 +56,7 @@ public class Plot : MonoBehaviour {
 		hasSeed = !hasSeed;
 	}
 	public bool waterPlot () {
-		if(isSewn()){
+		if(isSewn()) {
 			seed.waterSeed();
 			return true;
 		} else {
@@ -50,7 +70,7 @@ public class Plot : MonoBehaviour {
 		return seedSewn;
 	}
 	public Item harvestPlot () {
-		if(plant.getGrown()){
+		if(plant.getGrown()) {
 			return plant.harvestPlant();
 		} else {
 			return null;

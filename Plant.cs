@@ -1,7 +1,15 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
-[System.Serializable]
-public class Plant : MonoBehaviour {
+
+public class Plant {
+	/*
+     * Frontier
+ 	 * ********
+	 * This script contails all the information about the plant object and it's behaviour.
+	 * ********
+	 * @Matt
+	 * ********
+	 */
 	string plantName, description;
 	float nutritionalValue, growTime;
 	bool growing, grown, watered;
@@ -18,7 +26,7 @@ public class Plant : MonoBehaviour {
 		plantSeed = s;
 		growing = true;
 		plantObject = Resources.Load<GameObject>("models/plants/" + plantName);
-		description = "This is a " + getName () + ",give it time to grow and you'll be able to harvest " + getProduce ().getName () + "'s soon.";
+//		description = "This is a " + getName () + ",give it time to grow and you'll be able to harvest " + getProduce ().getName () + "'s soon.";
 	}
 
 	public bool waterPlant () {

@@ -5,23 +5,10 @@ using System.Collections.Generic;
 public class ItemDatabase : MonoBehaviour {
 	
 	public List<Item> items = new List<Item>();
-	//public Player player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-	
 	int itemID;
 	string stringID;
 	string endID;
-	/*---Character Equipment Reference---
-	 * 0 - Head
-	 * 1 - Neck
-	 * 2 - Shoulder
-	 * 3 - Back
-	 * 4 - Hands
-	 * 5 - Left Hand
-	 * 6 - Right Hand
-	 * 7 - Torso
-	 * 8 - Legs
-	 * 9 - Feet
-	 */
+
 	void Start () {
 		addItem ("Carrot", "Tasty Carrot", 0, 0, 15, 0, 0, 10, "Consumable", true);
 	}
