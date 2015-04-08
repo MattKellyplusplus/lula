@@ -53,6 +53,7 @@ public class Grid {
 	
 	public void setOccupied () {
 		occupied = !occupied;
+		Debug.Log ("Set Occupied");
 	}
 	
 	public void setGridSize (float s) {

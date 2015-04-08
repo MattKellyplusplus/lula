@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 [System.Serializable]
@@ -7,7 +7,7 @@ public class PlayerFarming : MonoBehaviour {
 	public Ray ray;
 	public GameObject plot, target;
 	public GridSystem gs;
-	bool seedPouch, windowOpen, buildMode;
+	bool seedPouch, windowOpen, farmMode;
 	public List<Seed> seeds = new List<Seed> ();
 	public List<Plot> plotsBeingUsed = new List<Plot> ();
 	// Use this for initialization
@@ -15,16 +15,11 @@ public class PlayerFarming : MonoBehaviour {
 		plot = Resources.Load<GameObject> ("Models/Plot");
 		gs = GameObject.FindGameObjectWithTag ("Grid System").GetComponent<GridSystem> ();
 		seeds.Add(new Seed("Carrot", "Plant this seed in a plot of soil!", 15f));
-		seeds.Add(new Seed("1", "Plant this seed in a plot of soil!", 15f));
-		seeds.Add(new Seed("2", "Plant this seed in a plot of soil!", 15f));
-		seeds.Add(new Seed("3", "Plant this seed in a plot of soil!", 15f));
-		seeds.Add(new Seed("4", "Plant this seed in a plot of soil!", 15f));
-		seeds.Add(new Seed("5", "Plant this seed in a plot of soil!", 15f));
 	}
 
 	void OnGUI () {
-		if (GUI.Button (new Rect (Screen.width - 110, 10, 105, 30), "Build Mode")) {
-			buildMode = !buildMode;
+		if (GUI.Button (new Rect (Screen.width - 110, 10, 105, 30), "Farm Mode")) {
+			farmMode = !farmMode;
 		}
 		if (seedPouch) {
 			openSeedPouch ();
@@ -37,7 +32,6 @@ public class PlayerFarming : MonoBehaviour {
 
 	void openSeedPouch (){
 		int c = 0;
-		GUI.Box (new Rect (10, 10, 270, 140), "");
 		for (int y = 0; y < 2; y++) {
 			for (int x = 0; x < 4; x++) {
 				GUI.Box (new Rect (15+(65*x),15+(65*y),65,65),"");
@@ -58,19 +52,19 @@ public class PlayerFarming : MonoBehaviour {
 		if (Input.GetKeyDown (KeyCode.Escape)) {
 			if(!windowOpen) {
 				for(int i = 0; i < plotsBeingUsed.Count; i++){
-					if(plotsBeingUsed[i].isSelected())
+					if(plotsBeingUsed.Count > 0 && plotsBeingUsed[i].isSelected())
 					{
 						plotsBeingUsed.Remove(plotsBeingUsed[i].selectPlot());
 					}
 				}
 			}
 			closeWindows ();
-			if (buildMode) {
-				buildMode = false;
+			if (farmMode) {
+				farmMode = false;
 			}
 		}
 		Ray ray = Camera.main.ViewportPointToRay (new Vector3 (0.5F, 0.5F, 0));
-		if (buildMode) {
+		if (farmMode) {
 			if (Physics.Raycast (ray, out hit, 15f)) {
 				if (!gs.isOn ()) {
 					gs.switchOnOff ();
@@ -83,6 +77,7 @@ public class PlayerFarming : MonoBehaviour {
 			if (Input.GetKeyDown (KeyCode.Mouse1)) {
 				if (Physics.Raycast (ray, out hit, 5f) && hit.transform.tag == "Terrain") {
 					gs.placeObject (gs.getGrid (hit.point.x, hit.point.z), plot);
+					Debug.Log("Placed plot");
 				} else if (Physics.Raycast (ray, out hit, 5f) && hit.transform.tag == "Plot") {
 					Plot p = hit.transform.GetComponent<Plot> ();
 					if(p.isSelected()){
@@ -93,7 +88,7 @@ public class PlayerFarming : MonoBehaviour {
 				}
 			}
 		} 
-		if (!buildMode && gs.isOn()) {
+		if (!farmMode && gs.isOn()) {
 			gs.switchOnOff();
 		}
 		if (Input.GetKeyDown (KeyCode.Mouse0)) {

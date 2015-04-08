@@ -47,8 +47,8 @@ public class GridSystem : MonoBehaviour {
 			i = grid.Count/2;
 		}
 		for (i = 0; i < grid.Count; i++) {
-			if(grid[i].getStartX() <= x && grid[i].getEndX () >= x){
-				if(grid[i].getStartY() <= y && grid[i].getEndY () >= y){
+			if(grid[i].getStartX() <= x && grid[i].getEndX () > x){
+				if(grid[i].getStartY() <= y && grid[i].getEndY () > y){
 					return grid[i];
 				}
 			}
