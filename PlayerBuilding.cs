@@ -1,72 +1,112 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-[System.Serializable]
+
 public class PlayerBuilding : MonoBehaviour {
 	bool buildMode;
-	public RaycastHit hit;
+	RaycastHit hit;
 	Ray ray;
-	public GameObject currentObject;
-	public BuildingObject b;
+	GameObject currentObject;
+	BuildingObject b;
 	List<Grid> grids = new List<Grid>();
-	public List<BuildingObject> objects = new List<BuildingObject>();
+	List<BuildingObject> objects = new List<BuildingObject>();
 	GridSystem gridSystem;
-	// Use this for initialization
+
 	void Start () {
 		gridSystem = GameObject.FindGameObjectWithTag ("Grid System").GetComponent<GridSystem> ();
 		objects.Add(new BuildingObject("Block", 3f, 3f));
+		objects.Add(new BuildingObject("Block", 3f, 3f));
 		objects.Add(new BuildingObject("Small Block", 1f, 1f));
 		objects.Add(new BuildingObject("Stairs", 1f, 1f));
-		//setCurrentObject (objects [0]);
+		objects.Add (new BuildingObject ("Wood Wall", 3f, 0.2f));
+		objects.Add (new BuildingObject ("Wood Wall", 3f, 0.2f));
+
 	}
 	
-	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.Escape)) {
 			buildMode = false;
-			gridSystem.switchOnOff();
+			if(gridSystem.isOn()){
+				gridSystem.switchOnOff();
+			}
 		}
 		if (buildMode) {
+
 			ray = Camera.main.ViewportPointToRay (new Vector3 (0.5F, 0.5F, 0));
 			if (Physics.Raycast (ray, out hit, 15f)) {
-				if(hit.transform.tag == "Terrain") {
-					gridSystem.selectGrid(gridSystem.getGrid(hit.point.x,hit.point.z));
-				}	
-				if(!gridSystem.isOn()){
-					gridSystem.switchOnOff();
-				}
-				if(getCurrentObject () != null) {
-					if(b.isRotated() && Input.GetAxis("Mouse ScrollWheel") < 0){
-						getCurrentObject().transform.Rotate(0f,90f,0f);
-						b.rotate();
-					} else if(!b.isRotated() && Input.GetAxis("Mouse ScrollWheel") > 0) {
-						getCurrentObject().transform.Rotate(0f,-90,0);
-						b.rotate();
+				if(hit.transform.tag == "Terrain"){
+					if(!hasObject()){
+						gridSystem.selectGrid(gridSystem.getGrid(hit.point.x,hit.point.z));
 					}
-					/*if(getCurrentObject().transform.position != new Vector3(gridSystem.getGrid(hit.point.x,hit.point.z).getStartX(), hit.point.y, gridSystem.getGrid(hit.point.x,hit.point.z).getStartX())){
-						if(canPlace()){
-							getCurrentObject().transform.GetChild(0).GetComponent<Renderer>().material.color = Color.white;
-						} else {*/
-							getCurrentObject().transform.GetChild(0).GetComponent<Renderer>().sharedMaterial.color = Color.white;
-					//	}
-					//}
-					getCurrentObject().transform.GetChild(0).gameObject.layer = 2;
-					//if(!gridSystem.getGrid(hit.point.x,hit.point.z).isOccupied()) {
-						getCurrentObject().transform.position = new Vector3(gridSystem.getGrid(hit.point.x,hit.point.z).getStartX(), hit.point.y, gridSystem.getGrid(hit.point.x,hit.point.z).getStartY());
-					//}
-					if(Input.GetKeyDown(KeyCode.Mouse1)){
-						if(canPlace()) {
-							Debug.Log("Got to here");
-							getCurrentObject().transform.GetChild(0).gameObject.layer = 0;
-							for(int i = 0; i < grids.Count; i++){
-								grids[i].setOccupied();
-							}
-							grids = new List<Grid>();
-							objects.Remove(currentObject.GetComponent<BuildingObjectBehaviour>().getObj());
-							setCurrentObject(null, new Vector3(0,0,0));
+					if(hasObject()){
+						if(getCurrentObject().tag == "Building Block") {
+							getCurrentObject().transform.position = new Vector3(gridSystem.getGrid(hit.point.x,hit.point.z).getMiddle("x"), hit.point.y, gridSystem.getGrid(hit.point.x,hit.point.z).getMiddle("Y"));
+						}
+						if(getCurrentObject().tag == "Furniture") {
+							getCurrentObject().transform.position = new Vector3(gridSystem.getGrid(hit.point.x,hit.point.z).getStartX(), hit.point.y, gridSystem.getGrid(hit.point.x,hit.point.z).getStartY());
+						}
+						if(gridSystem.isOn()){
+							gridSystem.switchOnOff();
 						}
 					}
-					//}
+				}
+				else if(hit.transform.tag == "Building Block" && hasObject()){
+					if(gridSystem.isOn()){
+						gridSystem.switchOnOff();
+					}
+					if(getCurrentObject().tag == "Wall"){
+						getCurrentObject().transform.position = new Vector3(hit.transform.position.x + 1f, hit.transform.position.y + 1.735f, hit.transform.position.z+1f);
+					}
+					if(getCurrentObject().tag == "Furniture"){
+						getCurrentObject().transform.position = new Vector3(gridSystem.getGrid(hit.point.x,hit.point.z).getStartX(), hit.point.y, gridSystem.getGrid(hit.point.x,hit.point.z).getStartY());
+					}
+				}
+				if(getCurrentObject () != null) {
+					if(getCurrentObject().tag == "Building Block"){
+						if(Input.GetAxis("Mouse ScrollWheel") < 0){
+							getCurrentObject().transform.Rotate(0f,90f,0f);
+							b.rotate();
+						} else if(Input.GetAxis("Mouse ScrollWheel") > 0) {
+							getCurrentObject().transform.Rotate(0f,-90,0);
+							b.rotate();
+						}
+					}
+					if(getCurrentObject().tag == "Wall"){
+						if(Input.GetAxis("Mouse ScrollWheel") < 0){
+							getCurrentObject().transform.Rotate(0f,90f,0f);
+						} else if (Input.GetAxis("Mouse ScrollWheel") > 0) {
+							getCurrentObject().transform.Rotate(0f,-90f,0f);
+						}
+					}
+					if(getCurrentObject().transform.GetChild(0).gameObject.layer == 0){
+						getCurrentObject().transform.GetChild(0).gameObject.layer = 2;
+					}
+					if(Input.GetKeyDown(KeyCode.Mouse1)){
+						if(hasObject()){
+							if(getCurrentObject().tag == "Building Block"){
+								if(canPlace()) {
+									getCurrentObject().layer = 6;
+									getCurrentObject().transform.GetChild(0).gameObject.layer = 6;
+									for(int i = 0; i < grids.Count; i++){
+										grids[i].setOccupied();
+									}
+									grids = new List<Grid>();
+									objects.Remove(currentObject.GetComponent<BuildingObjectBehaviour>().getObj());
+									setCurrentObject(null, new Vector3(0,0,0));
+									gridSystem.switchOnOff();
+								}
+							}
+							else if(getCurrentObject().tag == "Wall"){
+								if(getCurrentObject().transform.position != new Vector3(0,-100,0)){
+									getCurrentObject().layer = 6;
+									getCurrentObject().transform.GetChild(0).gameObject.layer = 6;
+									objects.Remove(currentObject.GetComponent<BuildingObjectBehaviour>().getObj());
+									setCurrentObject(null, new Vector3(0,0,0));
+									gridSystem.switchOnOff();
+								}
+							}
+						}
+					}
 				}
 			}
 		} 
@@ -100,19 +140,24 @@ public class PlayerBuilding : MonoBehaviour {
 		return currentObject;
 	}
 	void setCurrentObject (BuildingObject obj, Vector3 pos) {
-		//currentObject = obj.getObjectModel ();
 		if (obj == null) {
 			currentObject = null;
 			b = null;
 		}		
 		if (obj != null) {
 			b = obj;
-			currentObject = Instantiate (obj.getObjectModel(), new Vector3 (gridSystem.getGrid (pos.x, pos.z).getStartX (), pos.y, gridSystem.getGrid (pos.x, pos.z).getStartY ()), Quaternion.identity) as GameObject;
+			currentObject = Instantiate (obj.getObjectModel(), new Vector3 (0,-100,0), Quaternion.identity) as GameObject;
 			b.objModel = currentObject;
 			b.objModel.GetComponent<BuildingObjectBehaviour>().assignObj(b);
 		}
 	}
+	bool hasObject(){
+		return currentObject != null;
+	}
 	bool canPlace () {
+		if (getCurrentObject().tag == "Wall") {
+			return true;
+		}
 		for (int i = 0; i < b.getWidth(); i++) {
 			for(int j = 0; j < b.getLength(); j++){
 				if(b.isRotated()) {
@@ -121,9 +166,6 @@ public class PlayerBuilding : MonoBehaviour {
 				else if (!b.isRotated()) {
 					grids.Add(gridSystem.getGrid(getCurrentObject().transform.position.x+i, getCurrentObject().transform.position.z+j));
 				}
-				Debug.Log(grids[grids.Count-1].getStartX()+","+grids[grids.Count-1].getStartY());
-				Debug.Log(getCurrentObject().transform.position.x+i+","+ getCurrentObject().transform.position.z+j);
-				Debug.Log(grids.Count);
 			}
 		}
 		for (int k = 0; k < grids.Count; k++) {

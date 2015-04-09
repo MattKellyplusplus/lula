@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-[System.Serializable]
+
 public class BuildingObject {
 
 	public float width;
 	public float length;
 	string objName;
-	public List<Grid> gridsOn;
-	public bool rotated;
+	List<Grid> gridsOn = new List<Grid>();
+	bool rotated;
 	public GameObject objModel;
 
 	void Start () {
@@ -37,7 +37,6 @@ public class BuildingObject {
 		return length;
 	}
 	public void rotate () {
-		Debug.Log ("Rotated");
 		rotated = !rotated;
 		Debug.Log (rotated);
 	}

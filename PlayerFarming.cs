@@ -1,19 +1,19 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-[System.Serializable]
+
 public class PlayerFarming : MonoBehaviour {
-	public RaycastHit hit;
-	public Ray ray;
-	public GameObject plot, target;
-	public GridSystem gs;
+	RaycastHit hit;
+	Ray ray;
+	GameObject plot, target;
+	GridSystem gridSystem;
 	bool seedPouch, windowOpen, farmMode;
-	public List<Seed> seeds = new List<Seed> ();
-	public List<Plot> plotsBeingUsed = new List<Plot> ();
-	// Use this for initialization
+	List<Seed> seeds = new List<Seed> ();
+	List<Plot> plotsBeingUsed = new List<Plot> ();
+
 	void Start () {
 		plot = Resources.Load<GameObject> ("Models/Plot");
-		gs = GameObject.FindGameObjectWithTag ("Grid System").GetComponent<GridSystem> ();
+		gridSystem = GameObject.FindGameObjectWithTag ("Grid System").GetComponent<GridSystem> ();
 		seeds.Add(new Seed("Carrot", "Plant this seed in a plot of soil!", 15f));
 	}
 
@@ -39,7 +39,6 @@ public class PlayerFarming : MonoBehaviour {
 				{
 					if(GUI.Button(new Rect (15+(65*x),15+(65*y),65,65), seeds[c].getName())){
 						plantSeed(seeds[c]);
-						Debug.Log(c + "vs" +seeds.Count);
 
 					}
 					c++;
@@ -47,7 +46,7 @@ public class PlayerFarming : MonoBehaviour {
 			}
 		}
 	}
-	// Update is called once per frame
+
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.Escape)) {
 			if(!windowOpen) {
@@ -66,18 +65,17 @@ public class PlayerFarming : MonoBehaviour {
 		Ray ray = Camera.main.ViewportPointToRay (new Vector3 (0.5F, 0.5F, 0));
 		if (farmMode) {
 			if (Physics.Raycast (ray, out hit, 15f)) {
-				if (!gs.isOn ()) {
-					gs.switchOnOff ();
+				if (!gridSystem.isOn ()) {
+					gridSystem.switchOnOff ();
 				}
-				gs.selectGrid (gs.getGrid (hit.point.x, hit.point.z));
-			} else if (Physics.Raycast (ray, out hit, 16f) && gs.isOn ()) {
-				gs.switchOnOff ();
+				gridSystem.selectGrid (gridSystem.getGrid (hit.point.x, hit.point.z));
+			} else if (Physics.Raycast (ray, out hit, 16f) && gridSystem.isOn ()) {
+				gridSystem.switchOnOff ();
 			}
 
 			if (Input.GetKeyDown (KeyCode.Mouse1)) {
 				if (Physics.Raycast (ray, out hit, 5f) && hit.transform.tag == "Terrain") {
-					gs.placeObject (gs.getGrid (hit.point.x, hit.point.z), plot);
-					Debug.Log("Placed plot");
+					gridSystem.placeObject (gridSystem.getGrid (hit.point.x, hit.point.z), plot);
 				} else if (Physics.Raycast (ray, out hit, 5f) && hit.transform.tag == "Plot") {
 					Plot p = hit.transform.GetComponent<Plot> ();
 					if(p.isSelected()){
@@ -88,8 +86,8 @@ public class PlayerFarming : MonoBehaviour {
 				}
 			}
 		} 
-		if (!farmMode && gs.isOn()) {
-			gs.switchOnOff();
+		if (!farmMode && gridSystem.isOn()) {
+			gridSystem.switchOnOff();
 		}
 		if (Input.GetKeyDown (KeyCode.Mouse0)) {
 			if(Physics.Raycast(ray, out hit, 5f) && hit.transform.tag == "Plot"){
